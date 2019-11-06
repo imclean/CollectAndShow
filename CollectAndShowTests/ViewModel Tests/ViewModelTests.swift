@@ -1,5 +1,5 @@
 //
-//  CollectAndShowTests.swift
+//  ViewModelTests.swift
 //  CollectAndShowTests
 //
 //  Created by Iain McLean on 06/11/2019.
@@ -9,16 +9,20 @@
 import XCTest
 @testable import CollectAndShow
 
-class CollectAndShowTests: XCTestCase {
+
+class ViewModelTests: XCTestCase {
 
     override func setUp() {
-        
     }
 
     override func tearDown() {
-       
     }
-
     
-
+    func testDataUpdatesWhenLoadingIsSetToTrue() {
+        
+    }
+    
+    func testDataDoesNotUpdateWhenLoadingIsSetToFalse() {
+        
+    }
 }
