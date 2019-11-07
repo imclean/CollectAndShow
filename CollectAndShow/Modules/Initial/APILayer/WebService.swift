@@ -21,8 +21,14 @@ class WebService {
         }
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             if let data = data {
-                let allScources = try! JSONDecoder().decode(Sources.self, from: data)
-                callback(allScources.sources)
+                do {
+                    let allScources = try JSONDecoder().decode(Sources.self, from: data)
+                    callback(allScources.sources)
+                } catch let error {
+                    print(error)
+                    callback([Source]())
+                }
+                
             }
         }
         task.resume()
@@ -37,8 +43,13 @@ class WebService {
         
         return URLSession.shared.rx.data(request: urlrequest)
             .map {
-                let articles = try! JSONDecoder().decode(Articles.self, from: $0)
-                return articles.articles
+                do {
+                    let articles = try JSONDecoder().decode(Articles.self, from: $0)
+                    return articles.articles
+                } catch let error {
+                    print(error)
+                    return [Article]()
+                }
             }
     }
 }

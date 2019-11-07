@@ -28,14 +28,14 @@ class Articles: Decodable {
 
 class Article: Decodable {
     var title: String
-    var description: String
+    var description: String?
     var url: String
     
     required init(from decoder: Decoder) throws {
         do {
             let map = try decoder.container(keyedBy: CodingKeys.self)
             self.title = try map.decode(String.self, forKey: .title)
-            self.description = try map.decode(String.self, forKey: .description)
+            self.description = try map.decode(String?.self, forKey: .description)
             self.url = try map.decode(String.self, forKey: .url)
         } catch let error {
             throw error
