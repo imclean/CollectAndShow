@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import RxSwift
 import RxCocoa
+import SafariServices
 
 class ArticlesViewController: UIViewController, StoryBoarded {
     
@@ -31,18 +32,34 @@ class ArticlesViewController: UIViewController, StoryBoarded {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if let viewModel = viewModel {
-            viewModel.data.drive(tableView.rx.items(cellIdentifier: "Cell", cellType: ArticleTableViewCell.self)) { _, article, cell in
-                cell.article = article
-                cell.titleLabel.text = article.title
-                cell.descriptionLabel.text = article.description
-            }.disposed(by: disposeBag)
+        if tableView.dataSource == nil {
+            if let viewModel = viewModel {
+                viewModel.data.drive(tableView.rx.items(cellIdentifier: "Cell", cellType: ArticleTableViewCell.self)) { _, article, cell in
+                    cell.article = article
+                    cell.titleLabel.text = article.title
+                    cell.descriptionLabel.text = article.description
+                }.disposed(by: disposeBag)
+                
+                viewModel.data.asDriver()
+                    .map { "\($0.count) Articles"}
+                    .drive(navigationItem.rx.title)
+                    .disposed(by: disposeBag)
+            }
             
-            viewModel.data.asDriver()
-                .map { "\($0.count) Articles"}
-                .drive(navigationItem.rx.title)
-                .disposed(by: disposeBag)
+            tableView.rx.itemSelected
+            .subscribe(onNext: { [weak self] indexPath in
+                if let cell = self?.tableView.cellForRow(at: indexPath) as? ArticleTableViewCell, let article = cell.article {
+                    if let url = URL(string: article.url) {
+                        let config = SFSafariViewController.Configuration()
+                        let safari = SFSafariViewController(url: url, configuration: config)
+                        safari.modalPresentationStyle = .overFullScreen
+                        self?.present(safari, animated: true)
+                    }
+                }
+                self?.tableView.deselectRow(at: indexPath, animated: true)
+                }).disposed(by: disposeBag)
         }
+        
     }
     
 }
