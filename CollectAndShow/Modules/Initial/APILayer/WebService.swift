@@ -10,11 +10,11 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-typealias completion = () -> ([Source])
+typealias completion = ([Source]) -> Void
 
 class WebService {
     
-    func getSources(url: String, callback: @escaping ([Source]) -> Void) -> URLSessionTask? {
+    func getSources(url: String, callback: @escaping completion) -> URLSessionTask? {
         guard let url = URL(string: url) else {
             callback([])
             return nil
@@ -24,8 +24,7 @@ class WebService {
                 do {
                     let allScources = try JSONDecoder().decode(Sources.self, from: data)
                     callback(allScources.sources)
-                } catch let error {
-                    print(error)
+                } catch {
                     callback([Source]())
                 }
                 
@@ -46,8 +45,7 @@ class WebService {
                 do {
                     let articles = try JSONDecoder().decode(Articles.self, from: $0)
                     return articles.articles
-                } catch let error {
-                    print(error)
+                } catch {
                     return [Article]()
                 }
             }
